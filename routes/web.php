@@ -1,29 +1,23 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
-
-// Route::get('/', function() {
-//     return view('home');
-// })->name('home');
-// Route::get('blog', function() {
-//     $posts = [
-//         ['id' => 1, 'title' => 'PHP', 'slug' => 'php'],
-//         ['id' => 2, 'title' => 'Laravel', 'slug' => 'laravel']
-//     ];
-//     return view('blog', ['posts' => $posts]);
-// })->name('blog');
-// Route::get('blog/{slug}', function($slug) {
-//     $post = $slug;
-//     return view('post', ['post' => $post]);
-// })->name('post');
-
-// Route::get('/', [PageController::class, 'home'])->name('home');
-// Route::get('blog', [PageController::class, 'blog'])->name('blog');
-// Route::get('blog/{slug}', [PageController::class, 'post'])->name('post');
 
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('blog', 'blog')->name('blog');
     Route::get('blog/{post:slug}', 'post')->name('post');
 });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
